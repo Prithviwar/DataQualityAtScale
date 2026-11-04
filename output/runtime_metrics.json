@@ -1,0 +1,18 @@
+{
+  "experiment_timestamp": "2026-11-04T15:33:32.238819+00:00",
+  "timings": {
+    "load_clean_seconds": 6.314,
+    "load_corrupted_seconds": 1.188,
+    "model_clean_seconds": 0.435,
+    "model_corrupted_seconds": 0.06,
+    "model_validated_seconds": 0.043,
+    "total_experiment_seconds": 8.042
+  },
+  "accuracy_deltas": {
+    "overall_drop_pp": 3.92,
+    "subgroup_A_drop_pp": -0.61,
+    "subgroup_B_drop_pp": 8.57,
+    "B_degrades_more_than_A": true
+  },
+  "validated_state_policy": "Quarantine policy: bad batch rejected by PyDeequ validation. Inference falls back to the clean baseline dataset. Accuracy is near-identical to clean baseline with minor variance from a different train/test split (operational simulation)."
+}

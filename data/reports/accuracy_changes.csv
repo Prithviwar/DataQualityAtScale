@@ -1,0 +1,4 @@
+Metric,Clean,Corrupted,Validated,Drop (pp),Recovery (pp)
+Overall,85.30%,80.97%,84.80%,4.33,3.83
+Subgroup A,80.43%,81.08%,80.16%,-0.65,-0.92
+Subgroup B,90.39%,80.86%,89.39%,9.53,8.53

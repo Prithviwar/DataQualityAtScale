@@ -1,0 +1,58 @@
+# config/quality_rules.yml
+# -------------------------
+# Data-quality rules for the synthetic dataset.
+#
+# Bounds are derived from the clean generator's distributions:
+#   feature_1 ~ N(0, 10)   → 99.9% of values fall in [-40, 40]; we use [-100, 100] (10σ)
+#   feature_2 ~ Uniform(0, 100) with mild subgroup-B bias; hard bounds [0, 100]
+#               A 1000x scale shift would push values up to ~100,000 → easily detected
+#   feature_3 ~ N(0, 50)   → 99.9% of values fall in [-200, 200]; we use [-300, 300] (6σ)
+#
+# Scale-shift detection (feature_2):
+#   clean p99 ≈ 100.0, so we set the max at 110 (10% headroom).
+#   A 1000x shift takes values into the 10,000–100,000 range → rule fires immediately.
+#   This calibration is stored in output/reference_stats.json at runtime.
+
+required_columns:
+  - id
+  - feature_1
+  - feature_2
+  - feature_3
+  - target
+  - subgroup
+  - batch_id
+
+completeness:
+  feature_1: 1.0   # zero nulls allowed
+  feature_2: 1.0
+  id:        1.0
+  target:    1.0
+
+uniqueness:
+  id: 1.0           # every id must be unique
+
+ranges:
+  feature_1:
+    min: -100.0
+    max:  100.0
+  feature_2:
+    min:    0.0
+    max:  110.0     # calibrated: clean max ≈ 100; 1000x shift → ~100,000 → FAIL
+  feature_3:
+    min: -300.0
+    max:  300.0
+
+allowed_values:
+  target:   ["0", "1"]   # stored as strings for YAML; validation code converts
+  subgroup: ["A", "B"]
+
+# feature_2 scale-shift detection thresholds
+# (also persisted to output/reference_stats.json at generation time)
+scale_shift_detection:
+  feature_2:
+    p99_clean:    100.0  # reference clean 99th percentile
+    alert_max:    110.0  # any value > this in the validated dataset → scale-shift fault
+
+# What to do when a blocking check fails
+failure_policy: quarantine   # options: quarantine | fail_fast
+

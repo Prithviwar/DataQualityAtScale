@@ -1,0 +1,4 @@
+Fault Type,Target Rate,Actual Rate,Affected Rows
+NULL injection (feature_1),5.0%,4.75%,475
+Scale shift (feature_2 × 1000),2.0%,1.75%,175
+Duplicate rows,3.0%,3.00%,300

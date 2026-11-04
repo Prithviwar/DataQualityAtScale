@@ -1,0 +1,140 @@
+# docker-compose.yml
+# ---------------------
+# Reproducible multi-container setup for the data-quality pipeline.
+#
+# Services
+# --------
+#   spark-master   – Spark standalone master
+#   spark-worker   – One Spark worker (scale with --scale spark-worker=N)
+#   quality-pipeline – Python pipeline container (inject + validate)
+#   jupyter        – Optional JupyterLab for analysis (profile: jupyter)
+#
+# Quick-start commands (PowerShell / CMD / bash)
+# -----------------------------------------------
+#   docker compose up --build
+#   docker compose run --rm quality-pipeline python inject_errors.py --rows 100000
+#   docker compose run --rm quality-pipeline python validate_pipeline.py --input data/generated/corrupted
+#
+# Full-scale run
+#   docker compose run --rm quality-pipeline python inject_errors.py --full-scale
+#
+# Environment overrides (via .env file or -e flags)
+#   SPARK_DRIVER_MEMORY    (default 2g)
+#   SPARK_EXECUTOR_MEMORY  (default 2g)
+#   SPARK_SHUFFLE_PARTITIONS (default 8 for dev, 200 for full-scale)
+#   ROWS                   (default 100000)
+#   SEED                   (default 42)
+
+version: "3.8"
+
+x-spark-env: &spark-env
+  SPARK_MASTER_URL: "spark://spark-master:7077"
+  SPARK_DRIVER_MEMORY: "${SPARK_DRIVER_MEMORY:-2g}"
+  SPARK_EXECUTOR_MEMORY: "${SPARK_EXECUTOR_MEMORY:-2g}"
+  SPARK_SHUFFLE_PARTITIONS: "${SPARK_SHUFFLE_PARTITIONS:-8}"
+  SPARK_VERSION: "4.1"
+
+services:
+
+  # --------------------------------------------------------------------------
+  # Spark master
+  # --------------------------------------------------------------------------
+  spark-master:
+    image: bitnami/spark:3.5
+    environment:
+      SPARK_MODE: master
+      SPARK_MASTER_HOST: spark-master
+      SPARK_RPC_AUTHENTICATION_ENABLED: "no"
+      SPARK_RPC_ENCRYPTION_ENABLED: "no"
+      SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED: "no"
+      SPARK_SSL_ENABLED: "no"
+    ports:
+      - "8080:8080"   # Spark master UI
+      - "7077:7077"   # Spark master RPC
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+
+  # --------------------------------------------------------------------------
+  # Spark worker
+  # --------------------------------------------------------------------------
+  spark-worker:
+    image: bitnami/spark:3.5
+    depends_on:
+      spark-master:
+        condition: service_healthy
+    environment:
+      SPARK_MODE: worker
+      SPARK_MASTER_URL: "spark://spark-master:7077"
+      SPARK_WORKER_MEMORY: "${SPARK_EXECUTOR_MEMORY:-2g}"
+      SPARK_WORKER_CORES: "${SPARK_WORKER_CORES:-2}"
+      SPARK_RPC_AUTHENTICATION_ENABLED: "no"
+      SPARK_RPC_ENCRYPTION_ENABLED: "no"
+      SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED: "no"
+      SPARK_SSL_ENABLED: "no"
+    ports:
+      - "8081:8081"   # Worker UI
+    deploy:
+      replicas: 1
+
+  # --------------------------------------------------------------------------
+  # Pipeline container – inject + validate
+  # --------------------------------------------------------------------------
+  quality-pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      spark-master:
+        condition: service_healthy
+    environment:
+      <<: *spark-env
+      ROWS: "${ROWS:-100000}"
+      SEED: "${SEED:-42}"
+    volumes:
+      - ./data:/app/data
+      - ./output:/app/output
+      - ./config:/app/config
+    command: >
+      bash -c "
+        echo '=== Running data generation and fault injection ===' &&
+        python inject_errors.py --rows ${ROWS:-100000} --seed ${SEED:-42} &&
+        echo '=== Running quality validation ===' &&
+        python validate_pipeline.py
+          --input data/generated/corrupted
+          --dataset-label corrupted
+          --injection-meta data/generated/injection_metadata.json
+          --output output/validation_results.json
+      "
+
+  # --------------------------------------------------------------------------
+  # JupyterLab (optional – start with: docker compose --profile jupyter up)
+  # --------------------------------------------------------------------------
+  jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    profiles:
+      - jupyter
+    depends_on:
+      - spark-master
+    environment:
+      <<: *spark-env
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./data:/app/data
+      - ./output:/app/output
+      - ./config:/app/config
+      - .:/app/notebooks
+    command: >
+      jupyter lab
+        --ip=0.0.0.0
+        --port=8888
+        --no-browser
+        --allow-root
+        --NotebookApp.token=''
+        --NotebookApp.password=''
+

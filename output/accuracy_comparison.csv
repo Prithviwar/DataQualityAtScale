@@ -1,0 +1,4 @@
+state,overall_accuracy,subgroup_A_accuracy,subgroup_B_accuracy,row_count,subgroup_A_count,subgroup_B_count,policy
+clean_baseline,0.847,0.801185,0.893991,10000,5000,5000,
+corrupted_no_checks,0.807767,0.807245,0.80829,10300,5156,5144,
+validated_quarantined,0.844333,0.789899,0.89769,10000,5000,5000,Quarantine rejected bad batch; fell back to clean baseline data

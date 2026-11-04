@@ -1,0 +1,53 @@
+# ============================================================================
+# Git Ignore for Data Quality ML Feature Store Pipeline
+# ============================================================================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Pytest / Testing / Coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+
+# Apache Spark / Hadoop / Java Runtime Temporaries
+.spark_tmp/
+spark-warehouse/
+metastore_db/
+derby.log
+*.log
+
+# Generated Runtime Parquet Datasets & Quarantine Runs
+# (Preserve reports and static assets; ignore dynamic runtime data)
+data/generated/
+data/quarantined/
+output/quarantine_manifest.json
+output/validation_results.json
+
+# IDEs & Operating System Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Jupyter Checkpoints
+.ipynb_checkpoints/
+

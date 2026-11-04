@@ -1,0 +1,5 @@
+Fault Category,batch_id_required,feature_1_completeness,feature_1_max,feature_1_min,feature_2_completeness,feature_2_max,feature_2_min,feature_2_scale_shift,feature_3_max,feature_3_min,feature_3_required,id_completeness,id_uniqueness,subgroup_required,target_completeness
+missing_values,PASSED,FAILED,—,—,PASSED,—,—,—,—,—,PASSED,PASSED,—,PASSED,PASSED
+unit_scale_shift,—,—,—,—,—,FAILED,—,FAILED,—,—,—,—,—,—,—
+duplicate_ids,—,—,—,—,—,—,—,—,—,—,—,—,FAILED,—,—
+out_of_range_values,—,—,PASSED,PASSED,—,FAILED,PASSED,—,PASSED,PASSED,—,—,—,—,—
