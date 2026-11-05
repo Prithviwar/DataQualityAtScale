@@ -79,8 +79,8 @@ docker compose up --build
 python inject_errors.py --rows 100000
 
 # Step 2: Validate corrupted dataset
-python validate_pipeline.py \
-    --input data/generated/corrupted \
+python validate_pipeline.py 
+    --input data/generated/corrupted 
     --injection-meta data/generated/injection_metadata.json
 
 # Step 3: Model impact experiment
