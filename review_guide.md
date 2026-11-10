@@ -1,6 +1,7 @@
 # Data Quality & ML Feature Store Pipeline: Comprehensive Review Guide
 
-> **Quick Summary**: This document is a complete walkthrough for the academic/technical review of the Data Quality Pipeline project. It covers the layman's explanation of the core problem, our automated firewall solution, visual graph interpretations, technical architecture, and answers to common reviewer questions.
+> **Quick Summary**: This document is a complete walkthrough for the academic/technical review of the Data Quality Pipeline project. It covers the layman's explanation of the core problem, our automated firewall solution, visual graph interpretations, technical architecture, and answers to common reviewer questions.  
+> 📄 **Formal PDF Technical Report**: The complete 4-page technical report with formal derivations, architectural schematics, and embedded figures is available at [`data/reports/technical_report.pdf`](data/reports/technical_report.pdf). Rebuild using `python generate_technical_report.py`.
 
 ---
 

@@ -31,6 +31,9 @@ scikit-learn>=1.4,<2.0
 pytest>=8.0,<9.0
 pytest-cov>=5.0,<6.0
 
+# Report Generation
+reportlab>=4.0,<6.0
+
 # Utilities
 py4j>=0.10.9,<0.11       # bundled with PySpark; listed for clarity
 

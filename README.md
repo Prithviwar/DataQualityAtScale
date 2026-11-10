@@ -4,6 +4,8 @@ A reproducible Spark/PyDeequ data-quality demonstration that generates determini
 synthetic data, injects configurable faults, validates before inference, and quarantines
 invalid batches with machine-readable diagnostics.
 
+> 📄 **Technical Report (PDF)**: The formal 4-page academic/industry report is available at [`data/reports/technical_report.pdf`](data/reports/technical_report.pdf). Rebuild anytime using `python generate_technical_report.py`.  
+
 ## Motivation
 
 Data quality failures silently degrade ML model accuracy — especially for underrepresented
@@ -207,6 +209,8 @@ takes ~10s for 10K rows.
 DataQualityProject/
 ├── inject_errors.py          # CLI: generate + inject faults
 ├── validate_pipeline.py      # CLI: PyDeequ validation + quarantine
+├── TECHNICAL_REPORT.pdf      # 4-page formal academic/technical report (PDF)
+├── generate_technical_report.py # Script to rebuild the PDF technical report
 ├── review_guide.md           # Reviewer guide: layman summary, graph guide & Q&A
 ├── src/
 │   ├── data_generation.py    # Spark-native Parquet generation
